@@ -102,6 +102,21 @@ td.nc{white-space:normal;line-height:1.3;}
 .empty{text-align:center;padding:2rem;color:var(--muted);font-size:12px;}
 .footer{font-size:10px;color:var(--muted);text-align:center;padding:0.5rem 1rem 1.5rem;}
 
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem 1.5rem;width:100%;max-width:360px;}
+.login-logo{text-align:center;font-size:2rem;margin-bottom:0.3rem;}
+.login-title{text-align:center;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:0.2rem;}
+.login-sub{text-align:center;font-size:11px;color:var(--muted);margin-bottom:1.5rem;}
+.login-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;}
+.login-input{background:#12151f;border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;outline:none;width:100%;margin-bottom:1rem;}
+.login-input:focus{border-color:var(--blue);}
+.login-btn{width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.03em;}
+.login-btn:active{opacity:0.85;}
+.login-err{color:var(--red);font-size:11px;text-align:center;margin-top:0.7rem;min-height:16px;}
+.user-chip{display:flex;align-items:center;gap:5px;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.2);border-radius:20px;padding:3px 8px 3px 5px;cursor:pointer;}
+.user-avatar{width:20px;height:20px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;}
+.user-name{font-size:10px;color:var(--blue);font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .leaflet-popup-content-wrapper{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;color:#e2e8f0;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
 .leaflet-popup-tip{background:#1a1d27;}
 .pu-id{font-size:10px;color:#06b6d4;font-weight:600;margin-bottom:4px;}
@@ -114,12 +129,30 @@ td.nc{white-space:normal;line-height:1.3;}
 </head>
 <body>
 
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">📍</div>
+    <div class="login-title">Dispatch Today</div>
+    <div class="login-sub">Masuk dengan akun teknisi kamu</div>
+    <label class="login-label">Nama</label>
+    <input class="login-input" id="loginName" placeholder="Nama teknisi..." autocomplete="username">
+    <label class="login-label">Password</label>
+    <input class="login-input" id="loginPass" type="password" placeholder="Password..." autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Masuk →</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
 <div class="header">
   <div class="htop">
     <div><h1>📍 Dispatch Today</h1><p>Auto refresh 5 menit</p></div>
     <div class="hright">
       <span class="dot"></span>
       <span class="rtime" id="rtime">Memuat...</span>
+      <div class="user-chip" onclick="doLogout()" title="Logout">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div class="user-name" id="userName">...</div>
+      </div>
       <button class="btnr" onclick="loadData()">⟳</button>
     </div>
   </div>
@@ -133,7 +166,7 @@ td.nc{white-space:normal;line-height:1.3;}
     <select class="fs" id="fStatus" onchange="applyFilter()"><option value="">Semua Status</option></select>
     <select class="fs" id="fCat"    onchange="applyFilter()"><option value="">Semua Kategori</option></select>
   </div>
-  <div class="fr">
+  <div class="fr" id="rowTechLoc">
     <select class="fs" id="fTech" onchange="applyFilter()"><option value="">Semua Teknisi</option></select>
     <select class="fs" id="fLoc"  onchange="applyFilter()"><option value="">Semua Lokasi</option></select>
   </div>
@@ -171,7 +204,53 @@ td.nc{white-space:normal;line-height:1.3;}
 <script>
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7w8YOcnZ7r9jBhqaFebXh0fIVg1P_v-vC7Bq9gcSW_dQcGVth68VDM7u8xzq_NwIHwPiv8Nsa36Fk/pub?gid=1981614453&single=true&output=csv';
 
+// Credentials — name: { pass, role: 'admin'|'tech', techName }
+const USERS = {
+  'Admin':          { pass:'pass307', role:'admin' },
+  'Dhany H':        { pass:'pass321', role:'tech',  techName:'Dhany H' },
+  'Gamma Epshylon': { pass:'pass532', role:'tech',  techName:'Gamma Epshylon' },
+  'Shabri Yasin':   { pass:'pass231', role:'tech',  techName:'Shabri Yasin' },
+  'Rusli':          { pass:'pass743', role:'tech',  techName:'Rusli' },
+  'Ilham':          { pass:'pass975', role:'tech',  techName:'Ilham' },
+  'Fahmi':          { pass:'pass876', role:'tech',  techName:'Fahmi' },
+  'Marjuki':        { pass:'pass427', role:'tech',  techName:'Marjuki' },
+  'Bram':           { pass:'pass964', role:'tech',  techName:'Bram' },
+  'Arya':           { pass:'pass888', role:'tech',  techName:'Arya' },
+  'Noval':          { pass:'pass189', role:'tech',  techName:'Noval' },
+  'Mufid':          { pass:'pass951', role:'tech',  techName:'Mufid' },
+  'Kaspi':          { pass:'pass691', role:'tech',  techName:'Kaspi' },
+};
+
+let CURRENT_USER = null;
 let DATA=[], FILTERED=[], map=null, markerLayer=null, mapReady=false, openDetail=null;
+
+function doLogin(){
+  const name = document.getElementById('loginName').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const user = USERS[name];
+  if(!user || user.pass !== pass){
+    document.getElementById('loginErr').textContent = '❌ Nama atau password salah';
+    document.getElementById('loginPass').value = '';
+    return;
+  }
+  CURRENT_USER = { name, ...user };
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('userName').textContent = name;
+  loadData();
+}
+
+function doLogout(){
+  if(!confirm('Logout dari akun ' + CURRENT_USER.name + '?')) return;
+  CURRENT_USER = null;
+  DATA=[]; FILTERED=[];
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').textContent = '';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('tbody').innerHTML = '';
+  document.getElementById('summary').innerHTML = '';
+}
 
 // ── Parse CSV ──
 function parseCSV(t){
@@ -207,6 +286,10 @@ async function loadData(){
           solution:g(18),ops:g(19)
         };
       });
+    // Filter by technician if not admin
+    if(CURRENT_USER && CURRENT_USER.role==='tech'){
+      DATA=DATA.filter(r=>r.tech.toLowerCase()===CURRENT_USER.techName.toLowerCase());
+    }
     fillFilters();
     applyFilter();
     document.getElementById('rtime').textContent=new Date().toLocaleTimeString('id-ID');
@@ -221,6 +304,9 @@ function fillFilters(){
   fillSel('fCat',   [...new Set(DATA.map(r=>r.cat).filter(Boolean))].sort());
   fillSel('fTech',  [...new Set(DATA.map(r=>r.tech).filter(Boolean))].sort());
   fillSel('fLoc',   [...new Set(DATA.map(r=>r.loc).filter(Boolean))].sort());
+  // Hide teknisi & lokasi filter for tech role
+  const isTech = CURRENT_USER && CURRENT_USER.role==='tech';
+  document.getElementById('rowTechLoc').style.display = isTech ? 'none' : 'grid';
 }
 function fillSel(id,vals){
   const s=document.getElementById(id),cur=s.value,f=s.options[0].outerHTML;
@@ -403,8 +489,7 @@ const obs=new IntersectionObserver(entries=>{
 obs.observe(document.getElementById('map'));
 
 // Start
-loadData();
-setInterval(loadData,5*60*1000);
+setInterval(()=>{if(CURRENT_USER)loadData();},5*60*1000);
 </script>
 </body>
 </html>
