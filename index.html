@@ -89,6 +89,21 @@ td.nc{white-space:normal;line-height:1.3;}
 
 /* MAP */
 .mapsec{padding:0.8rem 1rem 1rem;}
+/* DURASI KERJA */
+.dursec{padding:0.8rem 1rem 0;}
+.durtitle{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;}
+.dur-grid{display:flex;flex-direction:column;gap:5px;}
+.dur-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;}
+.dur-avatar{width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue);flex-shrink:0;}
+.dur-info{flex:1;min-width:0;}
+.dur-name{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dur-time{font-size:9px;color:var(--muted);margin-top:1px;}
+.dur-right{text-align:right;flex-shrink:0;}
+.dur-dur{font-size:12px;font-weight:700;color:var(--green);}
+.dur-jobs{font-size:9px;color:var(--muted);margin-top:1px;}
+.dur-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:4px;}
+.dur-bar{height:3px;border-radius:2px;background:var(--blue);transition:width 0.4s;}
+.dur-empty{text-align:center;color:var(--muted);font-size:11px;padding:1rem 0;}
 .maptitle{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;}
 #map{height:300px;border-radius:12px;border:1px solid var(--border);overflow:hidden;background:#12151f;display:flex;align-items:center;justify-content:center;}
 .map-placeholder{color:var(--muted);font-size:12px;text-align:center;}
@@ -188,6 +203,11 @@ td.nc{white-space:normal;line-height:1.3;}
   <div class="empty" id="empty" style="display:none">Tidak ada tiket</div>
 </div>
 
+<div class="dursec" id="dursec" style="display:none">
+  <div class="durtitle">⏱ DURASI KERJA HARI INI</div>
+  <div class="dur-grid" id="durGrid"><div class="dur-empty">Memuat...</div></div>
+</div>
+
 <div class="mapsec">
   <div class="maptitle">🗺 PETA LOKASI</div>
   <div id="map"><div class="map-placeholder">⏳ Scroll ke sini untuk memuat peta</div></div>
@@ -203,6 +223,7 @@ td.nc{white-space:normal;line-height:1.3;}
 
 <script>
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7w8YOcnZ7r9jBhqaFebXh0fIVg1P_v-vC7Bq9gcSW_dQcGVth68VDM7u8xzq_NwIHwPiv8Nsa36Fk/pub?gid=1981614453&single=true&output=csv';
+const MTNC_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTelJfKwgQEkRDYBFgtt1R6DQWPGzUEpWad7WH9mtnxRRYUkEeGhZVr0jdtzH0ZKRQu6P4eGszH1C7V/pub?gid=1211971648&single=true&output=csv';
 
 // Credentials — name: { pass, role: 'admin'|'tech', techName }
 const USERS = {
@@ -293,8 +314,66 @@ async function loadData(){
     fillFilters();
     applyFilter();
     document.getElementById('rtime').textContent=new Date().toLocaleTimeString('id-ID');
+    loadDurasi();
   }catch(e){
     document.getElementById('rtime').textContent='⚠ Error';
+  }
+}
+
+// ── Load Durasi Kerja ──
+async function loadDurasi(){
+  const sec=document.getElementById('dursec');
+  const grid=document.getElementById('durGrid');
+  // Only show for admin
+  if(!CURRENT_USER||CURRENT_USER.role!=='admin'){sec.style.display='none';return;}
+  sec.style.display='block';
+  grid.innerHTML='<div class="dur-empty">Memuat durasi...</div>';
+  try{
+    const t=await fetch(MTNC_URL+'&t='+Date.now()).then(r=>r.text());
+    const rows=parseCSV(t).slice(1).filter(r=>r[0]&&r[1]);
+    // Parse timestamps, get today's date string
+    const parsed=rows.map(r=>{
+      const ts=new Date(r[1]);
+      return{tech:(r[2]||'').trim(),ts,valid:!isNaN(ts)};
+    }).filter(r=>r.valid&&r.tech);
+    if(!parsed.length){grid.innerHTML='<div class="dur-empty">Tidak ada data</div>';return;}
+    // Find today (latest date in data)
+    const maxDate=parsed.reduce((a,b)=>b.ts>a?b.ts:a,parsed[0].ts);
+    const todayStr=maxDate.toDateString();
+    const todayRows=parsed.filter(r=>r.ts.toDateString()===todayStr);
+    // Group by tech
+    const techMap={};
+    todayRows.forEach(r=>{
+      if(!techMap[r.tech])techMap[r.tech]={first:r.ts,last:r.ts,count:0};
+      if(r.ts<techMap[r.tech].first)techMap[r.tech].first=r.ts;
+      if(r.ts>techMap[r.tech].last)techMap[r.tech].last=r.ts;
+      techMap[r.tech].count++;
+    });
+    const entries=Object.entries(techMap).sort((a,b)=>b[1].count-a[1].count);
+    if(!entries.length){grid.innerHTML='<div class="dur-empty">Belum ada aktivitas hari ini</div>';return;}
+    const maxMin=Math.max(...entries.map(([,v])=>(v.last-v.first)/60000));
+    const fmt=ts=>ts.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    grid.innerHTML=entries.map(([tech,v])=>{
+      const totalMin=Math.round((v.last-v.first)/60000);
+      const h=Math.floor(totalMin/60),m=totalMin%60;
+      const durStr=totalMin===0?'< 1m':(h>0?`${h}j ${m}m`:`${m}m`);
+      const pct=maxMin>0?Math.round((totalMin/maxMin)*100):0;
+      const init=tech.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      return`<div class="dur-card">
+        <div class="dur-avatar">${init}</div>
+        <div class="dur-info">
+          <div class="dur-name">${tech}</div>
+          <div class="dur-time">${fmt(v.first)} – ${fmt(v.last)}</div>
+          <div class="dur-bar-wrap"><div class="dur-bar" style="width:${pct}%"></div></div>
+        </div>
+        <div class="dur-right">
+          <div class="dur-dur">${durStr}</div>
+          <div class="dur-jobs">${v.count} job</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    grid.innerHTML='<div class="dur-empty">⚠ Gagal memuat durasi</div>';
   }
 }
 
