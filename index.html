@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Dispatch Today</title>
 <style>
+
 :root {
   --bg:#0a110b;--card:#111a12;--border:#1c3120;
   --text:#e2f0e4;--muted:#6db87a;
@@ -49,7 +50,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .tscr{overflow-x:hidden;max-height:55vh;overflow-y:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
 thead{position:sticky;top:0;z-index:10;background:#0d1f0f;}
-th{padding:9px 10px;text-align:left;font-size:10px;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid var(--border);}
+th{padding:9px 10px;text-align:left;font-size:10px;font-weight:800;color:#00e676;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #1c3120;}
 th:nth-child(1){width:30%;}
 th:nth-child(2){width:30%;}
 th:nth-child(3){width:20%;}
@@ -93,7 +94,7 @@ td.nc{white-space:normal;line-height:1.4;}
 .mapsec{padding:0.8rem 1rem 1rem;}
 /* DURASI KERJA */
 .dursec{padding:0.8rem 1rem 0;}
-.durtitle{font-size:12px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:0.01em;}
+.durtitle{font-size:12px;font-weight:800;color:#e2f0e4;margin-bottom:8px;letter-spacing:0.01em;}
 .dur-grid{display:flex;flex-direction:column;gap:6px;}
 .dur-card{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
 .dur-avatar{width:32px;height:32px;border-radius:50%;background:#00e676;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#060d07;flex-shrink:0;}
@@ -106,7 +107,7 @@ td.nc{white-space:normal;line-height:1.4;}
 .dur-bar-wrap{height:4px;background:var(--border);border-radius:2px;margin-top:5px;}
 .dur-bar{height:4px;border-radius:2px;background:var(--green);transition:width 0.4s;}
 .dur-empty{text-align:center;color:var(--muted);font-size:12px;padding:1rem 0;}
-.maptitle{font-size:12px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.maptitle{font-size:12px;font-weight:800;color:#e2f0e4;margin-bottom:8px;}
 #map{height:300px;border-radius:12px;border:1.5px solid var(--border);overflow:hidden;background:#0a110b;display:flex;align-items:center;justify-content:center;}
 .map-placeholder{color:var(--muted);font-size:12px;text-align:center;}
 .mlegend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
@@ -120,14 +121,14 @@ td.nc{white-space:normal;line-height:1.4;}
 .footer{font-size:10px;color:var(--muted);text-align:center;padding:0.5rem 1rem 1.5rem;}
 
 /* LOGIN */
-#loginScreen{position:fixed;inset:0;background:var(--header);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+#loginScreen{position:fixed;inset:0;background:#060d07;z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
 .login-box{background:#111a12;border:1px solid #1c3120;border-radius:18px;padding:2.2rem 1.6rem;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
 .login-logo{text-align:center;margin-bottom:0.6rem;}
 .login-title{text-align:center;font-size:1rem;font-weight:800;color:#e2f0e4;margin-bottom:0.2rem;}
 .login-sub{text-align:center;font-size:12px;color:#6db87a;margin-bottom:1.6rem;}
 .login-label{font-size:12px;color:#e2f0e4;font-weight:600;margin-bottom:5px;display:block;}
 .login-input{background:#0d1a0f;border:1.5px solid #1c3120;color:#e2f0e4;padding:11px 13px;border-radius:9px;font-size:14px;outline:none;width:100%;margin-bottom:1rem;font-weight:500;}
-.login-input:focus{border-color:var(--green);background:#fff;}
+.login-input:focus{border-color:var(--green);background:#0d1a0f;}
 .login-btn{width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:0.03em;}
 .login-btn:active{opacity:0.85;}
 .login-err{color:var(--red);font-size:12px;font-weight:600;text-align:center;margin-top:0.7rem;min-height:18px;}
@@ -142,7 +143,6 @@ td.nc{white-space:normal;line-height:1.4;}
 .pu-row span{color:var(--text);font-weight:600;}
 .pu-btns{display:flex;gap:6px;margin-top:8px;}
 .pu-btn{flex:1;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;text-align:center;}
-</style>
 
 .header{background:var(--header);border-bottom:2px solid var(--green);padding:0.8rem 1rem;position:sticky;top:0;z-index:100;}
 .htop{display:flex;align-items:center;justify-content:space-between;}
@@ -221,10 +221,10 @@ td.nc{white-space:normal;line-height:1.3;}
 .mapsec{padding:0.8rem 1rem 1rem;}
 /* DURASI KERJA */
 .dursec{padding:0.8rem 1rem 0;}
-.durtitle{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;}
+.durtitle{font-size:11px;font-weight:600;color:#8bc99a;margin-bottom:6px;}
 .dur-grid{display:flex;flex-direction:column;gap:5px;}
 .dur-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;}
-.dur-avatar{width:28px;height:28px;border-radius:50%;background:rgba(0,165,80,0.12);border:1px solid rgba(0,165,80,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--primary);flex-shrink:0;}
+.dur-avatar{width:28px;height:28px;border-radius:50%;background:rgba(0,230,118,0.15);border:1px solid rgba(0,230,118,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--primary);flex-shrink:0;}
 .dur-info{flex:1;min-width:0;}
 .dur-name{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .dur-time{font-size:9px;color:var(--muted);margin-top:1px;}
@@ -234,7 +234,7 @@ td.nc{white-space:normal;line-height:1.3;}
 .dur-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:4px;}
 .dur-bar{height:3px;border-radius:2px;background:var(--green);transition:width 0.4s;}
 .dur-empty{text-align:center;color:var(--muted);font-size:11px;padding:1rem 0;}
-.maptitle{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;}
+.maptitle{font-size:11px;font-weight:600;color:#8bc99a;margin-bottom:6px;}
 #map{height:300px;border-radius:12px;border:1px solid var(--border);overflow:hidden;background:#0a110b;display:flex;align-items:center;justify-content:center;}
 .map-placeholder{color:var(--muted);font-size:12px;text-align:center;}
 .mlegend{display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;}
@@ -248,17 +248,17 @@ td.nc{white-space:normal;line-height:1.3;}
 .footer{font-size:10px;color:var(--muted);text-align:center;padding:0.5rem 1rem 1.5rem;}
 
 /* LOGIN */
-#loginScreen{position:fixed;inset:0;background:var(--header);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
-.login-box{background:#fff;border:1px solid var(--border);border-radius:16px;padding:2rem 1.5rem;width:100%;max-width:360px;}
+#loginScreen{position:fixed;inset:0;background:#060d07;z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.login-box{background:#111a12;border:1px solid #1c3120;border-radius:16px;padding:2rem 1.5rem;width:100%;max-width:360px;}
 .login-logo{text-align:center;font-size:2rem;margin-bottom:0.3rem;}
-.login-title{text-align:center;font-size:1.1rem;font-weight:700;color:var(--header);margin-bottom:0.2rem;}
-.login-sub{text-align:center;font-size:11px;color:var(--muted);margin-bottom:1.5rem;}
+.login-title{text-align:center;font-size:1.1rem;font-weight:700;color:#e2f0e4;margin-bottom:0.2rem;}
+.login-sub{text-align:center;font-size:11px;color:#6db87a;margin-bottom:1.5rem;}
 .login-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;}
-.login-input{background:#f4faf4;border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;outline:none;width:100%;margin-bottom:1rem;}
+.login-input{background:#0a110b;border:1px solid #1c3120;color:#e2f0e4;padding:10px 12px;border-radius:8px;font-size:13px;outline:none;width:100%;margin-bottom:1rem;}
 .login-input:focus{border-color:var(--green);}
 .login-btn{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.03em;}
 .login-btn:active{opacity:0.85;}
-.login-err{color:var(--red);font-size:11px;text-align:center;margin-top:0.7rem;min-height:16px;}
+.login-err{color:#ff5252;font-size:11px;text-align:center;margin-top:0.7rem;min-height:16px;}
 .user-chip{display:flex;align-items:center;gap:5px;background:rgba(0,200,83,0.15);border:1px solid rgba(0,200,83,0.3);border-radius:20px;padding:3px 8px 3px 5px;cursor:pointer;}
 .user-avatar{width:20px;height:20px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;}
 .user-name{font-size:10px;color:#b3ffda;font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -270,6 +270,7 @@ td.nc{white-space:normal;line-height:1.3;}
 .pu-row span{color:var(--text);}
 .pu-btns{display:flex;gap:6px;margin-top:8px;}
 .pu-btn{flex:1;padding:5px;border-radius:6px;font-size:10px;font-weight:600;text-decoration:none;text-align:center;}
+
 </style>
 </head>
 <body>
