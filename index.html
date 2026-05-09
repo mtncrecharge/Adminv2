@@ -394,7 +394,20 @@ const USERS = {
   'Kaspi':          { pass:'pass691', role:'tech',  techName:'Kaspi' },
 };
 
-let CURRENT_USER = null;
+// ── Default lokasi per teknisi ──
+const TECH_LOC = {
+  'Rusli':          'Jogja',
+  'Mufid':          'Bandung',
+  'Dhany H':        'Bandung',
+  'Bram':           'Surabaya',
+  'Shabri Yasin':   'Jakarta',
+  'Arya':           'Bali',
+  'Kaspi':          'Jakarta',
+  'Gamma Epshylon': 'Jakarta',
+  'Fahmi':          'Jakarta',
+  'Ilham':          'Jakarta',
+  'Marjuki':        'Jakarta',
+};
 let DATA=[], FILTERED=[], map=null, markerLayer=null, mapReady=false, openDetail=null;
 
 function doLogin(){
@@ -441,6 +454,8 @@ function parseCSV(t){
 // ── Load data ──
 async function loadData(){
   document.getElementById('rtime').textContent='Memuat...';
+  // Reset data dulu sebelum fetch biar gak ngaco
+  DATA=[]; FILTERED=[];
   try{
     const t=await fetch(CSV_URL+'&t='+Date.now()).then(r=>r.text());
     DATA=parseCSV(t).slice(1)
@@ -450,7 +465,7 @@ async function loadData(){
         const ll=g(13)?g(13).split(','):[];
         return{
           id:g(0),ts:g(1),termId:g(2),termName:g(3),
-          type:g(4),tier:g(5),loc:g(6),ovo:g(7),
+          type:g(4),tier:g(5),loc:g(6)||TECH_LOC[g(11)]||'-',ovo:g(7),
           pb:g(8),pbN:parseFloat(g(8))||0,cat:g(9),issue:g(10),
           tech:g(11),link:g(12),
           lat:ll[0]?parseFloat(ll[0]):null,lng:ll[1]?parseFloat(ll[1]):null,
@@ -561,9 +576,10 @@ function applyFilter(){
     return ms&&(!st||r.status===st)&&(!cat||r.cat===cat)&&(!tech||r.tech===tech)&&(!loc||r.loc===loc);
   });
 
-  // Summary
-  const op=FILTERED.filter(r=>r.status.toLowerCase()==='open').length;
-  const dn=FILTERED.filter(r=>r.status.toLowerCase()==='done'||r.status.toLowerCase()==='closed').length;
+  // Summary - hitung ulang selalu dari FILTERED terbaru
+  const op=FILTERED.filter(r=>r.status.trim().toLowerCase()==='open').length;
+  const dn=FILTERED.filter(r=>{const s=r.status.trim().toLowerCase();return s==='done'||s==='closed';}).length;
+  const prog=FILTERED.filter(r=>r.status.trim().toLowerCase().includes('progress')).length;
   // Dynamic category counts from FILTERED data
   const catCounts={};
   FILTERED.forEach(r=>{if(r.cat)catCounts[r.cat]=(catCounts[r.cat]||0)+1;});
@@ -578,6 +594,7 @@ function applyFilter(){
     {l:'Total', v:FILTERED.length,c:'var(--primary)'},
     {l:'Open',  v:op,  c:'var(--red)'},
     {l:'Done',  v:dn,  c:'var(--green)'},
+    {l:'Prog',  v:prog,c:'var(--yellow)'},
     ...catCards,
   ].map(x=>`<div class="sc"><div class="sc-l">${x.l}</div><div class="sc-v" style="color:${x.c}">${x.v}</div></div>`).join('');
 
@@ -638,7 +655,7 @@ function renderTable(){
           ${r.issue?`<div class="di"><div class="dl">Issue</div><div class="dv" style="white-space:normal">${r.issue}</div></div>`:''}
           ${r.solution?`<div class="di"><div class="dl">Solution</div><div class="dv" style="white-space:normal">${r.solution}</div></div>`:''}
           <div class="dbtns">
-            ${r.lat&&r.lng?`<button onclick="goMap(${r.lat},${r.lng},event)" class="dbtn dbtn-map">🗺 Peta</button>`:''}
+            ${r.lat&&r.lng?`<a href="https://www.google.com/maps?q=${r.lat},${r.lng}" target="_blank" class="dbtn dbtn-map">🗺 Maps</a>`:''}
             ${r.link?`<a href="${r.link}" target="_blank" class="dbtn dbtn-form">📋 Form</a>`:''}
             ${r.ops?`<a href="${r.ops}" target="_blank" class="dbtn dbtn-ops">⚡ Ops</a>`:''}
           </div>
