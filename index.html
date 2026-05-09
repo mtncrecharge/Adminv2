@@ -808,6 +808,8 @@ let techWatchId = null;
 let realtimeInterval = null;
 
 async function fetchTechLocations(){
+  // Hanya admin yang bisa lihat lokasi teknisi
+  if(!CURRENT_USER || CURRENT_USER.role !== 'admin') return;
   try{
     const res = await fetch(FB_URL + '/locations.json?t=' + Date.now());
     const data = await res.json();
