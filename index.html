@@ -489,10 +489,13 @@ async function loadDurasi(){
       return{tech:(r[2]||'').trim(),ts,valid:!isNaN(ts)};
     }).filter(r=>r.valid&&r.tech);
     if(!parsed.length){grid.innerHTML='<div class="dur-empty">Tidak ada data</div>';return;}
-    // Find today (latest date in data)
-    const maxDate=parsed.reduce((a,b)=>b.ts>a?b.ts:a,parsed[0].ts);
-    const todayStr=maxDate.toDateString();
+    // Filter hanya hari ini (tanggal device)
+    const todayStr=new Date().toDateString();
     const todayRows=parsed.filter(r=>r.ts.toDateString()===todayStr);
+    if(!todayRows.length){
+      grid.innerHTML='<div class="dur-empty">Belum ada aktivitas hari ini</div>';
+      return;
+    }
     // Group by tech
     const techMap={};
     todayRows.forEach(r=>{
