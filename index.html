@@ -714,6 +714,8 @@ function openMaps(destLat, destLng, e){
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
   );
 }
+
+function toggle(i){
   const det=document.getElementById('det-'+i);
   const row=document.getElementById('row-'+i);
   if(openDetail!==null&&openDetail!==i){
