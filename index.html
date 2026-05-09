@@ -418,6 +418,7 @@ const TECH_LOC = {
 };
 let DATA=[], FILTERED=[], map=null, markerLayer=null, mapReady=false, openDetail=null;
 let trackingInterval=null, isTracking=false, techMarkers={};
+let CURRENT_USER=null;
 
 function doLogin(){
   const name = document.getElementById('loginName').value.trim();
